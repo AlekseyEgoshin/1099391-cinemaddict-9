@@ -1,4 +1,4 @@
-const CARDS = {
+const Сard = {
   DEFAULT: 5,
   EXTRA: 2,
 };
@@ -27,14 +27,14 @@ render(main, createContent(), `beforeend`);
 
 const filmListDefault = document.querySelector(`.films-list`);
 const filmContainer = filmListDefault.querySelector(`.films-list__container`);
-for (let i = 0; i < CARDS.DEFAULT; i++) {
+for (let i = 0; i < Сard.DEFAULT; i++) {
   render(filmContainer, createFilmCard(), `beforeend`);
 }
 
 const filmListExtra = document.querySelectorAll(`.films-list--extra`);
 for (const extraList of filmListExtra) {
   const extraListContainer = extraList.querySelector(`.films-list__container`);
-  for (let i = 0; i < CARDS.EXTRA; i++) {
+  for (let i = 0; i < Сard.EXTRA; i++) {
     render(extraListContainer, createFilmCard(), `beforeend`);
   }
 }
