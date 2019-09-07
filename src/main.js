@@ -16,15 +16,14 @@ const Card = {
 
 const renderCard = (cb, count) => {
   const onMouseClick = () => {
-    const removeAttribute = (singleCard) => {
-      if (singleCard.classList.contains(`visually-hidden`)) {
-        singleCard.classList.remove(`visually-hidden`);
-      }
-    };
     const filmCards = document.querySelectorAll(`.film-card`);
     const loadButton = document.querySelector(`.films-list__show-more`);
 
-    filmCards.forEach(removeAttribute);
+    filmCards.forEach((singleCard) => {
+      if (singleCard.classList.contains(`visually-hidden`)) {
+        singleCard.classList.remove(`visually-hidden`);
+      }
+    });
 
     loadButton.classList.add(`visually-hidden`);
   };
