@@ -1,4 +1,4 @@
-export const createFilmCard = ({movie, rating, year, duration, genre, description, commentary, isAdded, wasWatched, isFavorite}) => `
+export const createFilmCard = ({movie, rating, year, duration, genre, description, commentary, isAdded, isWatched, isFavorite}) => `
   <article class="film-card">
     <h3 class="film-card__title">${movie.title}</h3>
     <p class="film-card__rating">${rating}</p>
@@ -17,7 +17,7 @@ export const createFilmCard = ({movie, rating, year, duration, genre, descriptio
         Add to watchlist
       </button>
       <button
-        class="film-card__controls-item button film-card__controls-item--mark-as-watched${wasWatched ? ` film-card__controls-item--active` : ``}"
+        class="film-card__controls-item button film-card__controls-item--mark-as-watched${isWatched ? ` film-card__controls-item--active` : ``}"
       >
         Mark as watched
       </button>

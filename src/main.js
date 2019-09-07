@@ -1,6 +1,4 @@
-import {getFilters} from './components/data';
-import {getFilmInfo} from './components/data';
-
+import {getFilters, getFilmInfo} from './components/data';
 import {createSearchLine} from './components/search-line';
 import {createUserRank} from './components/user-rank';
 
@@ -18,27 +16,27 @@ const Card = {
 
 const renderCard = (cb, count) => {
   const onMouseClick = () => {
-    const filmCards = document.querySelectorAll(`.film-card`);
-    const loadButton = document.querySelector(`.films-list__show-more`);
-
-    filmCards.forEach(function (singleCard) {
+    const removeAttribute = (singleCard) => {
       if (singleCard.classList.contains(`visually-hidden`)) {
         singleCard.classList.remove(`visually-hidden`);
       }
-    });
+    };
+    const filmCards = document.querySelectorAll(`.film-card`);
+    const loadButton = document.querySelector(`.films-list__show-more`);
+
+    filmCards.forEach(removeAttribute);
 
     loadButton.classList.add(`visually-hidden`);
   };
 
   const changeStatisticsPoint = (filmCard) => {
-    const all = document.querySelector(`.main-navigation__all-movies`);
+    const movies = document.querySelector(`.main-navigation__all-movies`);
     const watchlist = document.querySelector(`.main-navigation__watchlist`);
     const history = document.querySelector(`.main-navigation__history`);
     const favorites = document.querySelector(`.main-navigation__favorites`);
-    // const stats = document.querySelector(`.main-navigation__stats`);
 
     // Обновляем значение фильтра all
-    all.textContent = parseFloat(all.textContent) + 1;
+    movies.textContent = parseFloat(movies.textContent) + 1;
 
     // Обновляем значение фильтра repeating
     if (filmCard.isAdded) {
@@ -46,7 +44,7 @@ const renderCard = (cb, count) => {
     }
 
     // Обновляем значение фильтра history
-    if (filmCard.wasWatched) {
+    if (filmCard.isWatched) {
       favorites.textContent = parseFloat(history.textContent) + 1;
     }
 
@@ -56,8 +54,6 @@ const renderCard = (cb, count) => {
     }
   };
 
-  const func = createFilmCard;
-
   if (count === Card.DEFAULT) {
     const filmList = document.querySelector(`.films-list`);
     const filmContainer = filmList.querySelector(`.films-list__container`);
@@ -66,15 +62,15 @@ const renderCard = (cb, count) => {
       const filmCard = cb();
       changeStatisticsPoint(filmCard);
 
-      renderFilm(filmContainer, filmCard, func);
+      renderFilm(filmContainer, filmCard, createFilmCard);
       if (i >= Card.DEFAULT / 2) {
         const lastAddedFilm = filmContainer.lastElementChild;
         lastAddedFilm.classList.add(`visually-hidden`);
       }
     }
 
-    const loadButton = document.querySelector(`.films-list__show-more`);
-    loadButton.addEventListener(`click`, onMouseClick);
+    const showMore = document.querySelector(`.films-list__show-more`);
+    showMore.addEventListener(`click`, onMouseClick);
   } else {
     const filmList = document.querySelectorAll(`.films-list--extra`);
 
@@ -84,7 +80,7 @@ const renderCard = (cb, count) => {
         const filmCard = cb();
         changeStatisticsPoint(filmCard);
 
-        renderFilm(extraListContainer, filmCard, func);
+        renderFilm(extraListContainer, filmCard, createFilmCard);
       }
     }
   }
@@ -92,11 +88,11 @@ const renderCard = (cb, count) => {
 
 const render = (container, template) => container.insertAdjacentHTML(`beforeend`, template);
 
-const renderFilm = (container, data, func) => {
+const renderFilm = (container, filmInfo, cb) => {
   container.insertAdjacentHTML(`beforeend`, new Array(1)
     .fill(``)
-    .map(() => data)
-    .map(func)
+    .map(() => filmInfo)
+    .map(cb)
     .join(``));
 };
 
@@ -114,7 +110,3 @@ renderCard(getFilmInfo, Card.DEFAULT);
 renderCard(getFilmInfo, Card.EXTRA);
 
 render(footer, createFilmPopup());
-
-// Появляется возможность объявить переменные после отрисовки Попапа для фильмов
-const filmDetail = document.querySelector(`.film-details`);
-filmDetail.classList.add(`visually-hidden`);

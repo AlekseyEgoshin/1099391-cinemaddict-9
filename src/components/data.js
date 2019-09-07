@@ -24,7 +24,17 @@ export const getFilmInfo = () => ({
     198,
     47,
   ][Math.floor(Math.random() * 7)],
-  genre: `musical`,
+  genre: [
+    `musical`,
+    `action`,
+    `drama`,
+    `comedy`,
+    `adventure`,
+    `documentary`,
+    `horror`,
+    `science fiction`,
+    `crime`,
+  ][Math.floor(Math.random() * 9)],
   description: [
     `Lorem ipsum dolor sit amet, consectetur adipiscing elit. Cras aliquet varius magna, non porta ligula feugiat eget. Fusce tristique felis at fermentum pharetra. Aliquam id orci ut lectus varius viverra.`,
     `Nullam nunc ex, convallis sed finibus eget, sollicitudin eget ante. Phasellus eros mauris, condimentum sed nibh vitae, sodales efficitur ipsum. Sed blandit, eros vel aliquam faucibus, purus ex euismod diam, eu luctus nunc ante ut dui.`,
@@ -32,7 +42,7 @@ export const getFilmInfo = () => ({
   ][Math.floor(Math.random() * 3)],
   commentary: createComments(),
   isAdded: Boolean(Math.round(Math.random())),
-  wasWatched: Boolean(Math.round(Math.random())),
+  isWatched: Boolean(Math.round(Math.random())),
   isFavorite: Boolean(Math.round(Math.random())),
 });
 
@@ -61,7 +71,7 @@ export const getFilters = () => (
   ]
 );
 
-const String = {
+const StringSize = {
   MAX: 10,
   MIN: 0,
 };
@@ -105,7 +115,7 @@ const createComments = () => {
     `Sad story`,
   ];
 
-  const count = Math.floor(getRandomArbitrary(String.MIN, String.MAX));
+  const count = Math.floor(getRandomArbitrary(StringSize.MIN, StringSize.MAX));
   const commentaries = new Set();
 
   for (let i = 0; i < count; i++) {
