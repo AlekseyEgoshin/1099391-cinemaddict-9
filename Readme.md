@@ -1,7 +1,7 @@
 # Личный проект «Киноман» [![Build status][travis-image]][travis-url]
 
 * Студент: [Алексей Егошин](https://up.htmlacademy.ru/ecmascript/9/user/1099391).
-* Наставник: `Алексей Белявский`.
+* Наставник: [Алексей Белявский](https://htmlacademy.ru/profile/id666435).
 
 ---
 

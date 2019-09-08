@@ -1,9 +1,10 @@
-export const createMenu = () => `
+export const createMenu = (filters) => `
   <nav class="main-navigation">
-    <a href="#all" class="main-navigation__item main-navigation__item--active">All movies</a>
-    <a href="#watchlist" class="main-navigation__item">Watchlist <span class="main-navigation__item-count">13</span></a>
-    <a href="#history" class="main-navigation__item">History <span class="main-navigation__item-count">4</span></a>
-    <a href="#favorites" class="main-navigation__item">Favorites <span class="main-navigation__item-count">8</span></a>
-    <a href="#stats" class="main-navigation__item main-navigation__item--additional">Stats</a>
+    ${Array.from(filters).map((filter) => `
+      <a
+        href="#${filter.title.split(` `)[0].toLowerCase()}"
+        class="main-navigation__item${!filter.count && !filter.title === `Stats` ? ` main-navigation__item--active` : ``}${(filter.title === `Stats`) ? ` main-navigation__item--additional` : ``}"
+      />${filter.title}${!(filter.title === `Stats`) ? ` <span class="main-navigation__item-count main-navigation__${filter.title.toLowerCase().replace(` `, `-`)}">${filter.count}</span>` : ``}</a>
+    `).join(``)}
   </nav>
 `;
