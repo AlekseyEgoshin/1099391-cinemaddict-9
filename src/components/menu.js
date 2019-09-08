@@ -1,6 +1,6 @@
-export const createMenu = (arr) => `
+export const createMenu = (filters) => `
   <nav class="main-navigation">
-    ${Array.from(arr).map((filter) => `
+    ${Array.from(filters).map((filter) => `
       <a
         href="#${filter.title.split(` `)[0].toLowerCase()}"
         class="main-navigation__item${!filter.count && !filter.title === `Stats` ? ` main-navigation__item--active` : ``}${(filter.title === `Stats`) ? ` main-navigation__item--additional` : ``}"

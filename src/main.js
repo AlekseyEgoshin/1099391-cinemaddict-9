@@ -53,6 +53,8 @@ const renderCard = (cb, count) => {
     }
   };
 
+  const showMore = document.querySelector(`.films-list__show-more`);
+
   if (count === Card.DEFAULT) {
     const filmList = document.querySelector(`.films-list`);
     const filmContainer = filmList.querySelector(`.films-list__container`);
@@ -68,7 +70,6 @@ const renderCard = (cb, count) => {
       }
     }
 
-    const showMore = document.querySelector(`.films-list__show-more`);
     showMore.addEventListener(`click`, onMouseClick);
   } else {
     const filmList = document.querySelectorAll(`.films-list--extra`);
@@ -87,13 +88,15 @@ const renderCard = (cb, count) => {
 
 const render = (container, template) => container.insertAdjacentHTML(`beforeend`, template);
 
-const renderFilm = (container, filmInfo, cb) => {
-  container.insertAdjacentHTML(`beforeend`, new Array(1)
-    .fill(``)
-    .map(() => filmInfo)
-    .map(cb)
-    .join(``));
-};
+const renderFilm = (container, filmInfo, cb) =>
+  container.insertAdjacentHTML(
+      `beforeend`,
+      new Array(1)
+        .fill(``)
+        .map(() => filmInfo)
+        .map(cb)
+        .join(``)
+    );
 
 const header = document.querySelector(`.header`);
 const main = document.querySelector(`.main`);
