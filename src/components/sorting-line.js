@@ -1,6 +1,6 @@
 import {AbstractComponent} from './abstract-component';
 
-export class SortingLine extends AbstractComponent{
+export class SortingLine extends AbstractComponent {
   getTemplate() {
     return `
       <ul class="sort">

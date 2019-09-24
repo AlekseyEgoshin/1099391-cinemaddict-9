@@ -172,7 +172,7 @@ export class ContentController {
       });
 
     render(filmListElement, film.getElement(), Position.BEFOREEND);
-  };
+  }
 
   _onSortLinkClick(evt) {
     evt.preventDefault();
