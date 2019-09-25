@@ -2,14 +2,6 @@ import {Content} from '../content';
 import {Position, render} from '../utils';
 import {FilmPopup} from '../film-popup';
 import {FilmCard} from '../film-card';
-import {Menu} from '../menu';
-import {SortingLine} from '../sorting-line';
-
-const Card = {
-  DEFAULT: 10,
-  EXTRA: 4,
-  TOTAL: 14,
-};
 
 const Film = {
   DEFAULT: `default`,

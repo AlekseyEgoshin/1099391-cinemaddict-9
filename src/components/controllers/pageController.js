@@ -29,7 +29,12 @@ export class PageController {
         let i = 0;
         Mocks.forEach((taskMock) => this._renderCard(taskMock, i++, Film.DEFAULT));
       }
-    }
+
+      if (currentActiveButton.dataset.sortType !== evt.target.dataset.sortType) {
+        currentActiveButton.classList.remove(`sort__button--active`);
+        evt.target.classList.add(`sort__button--active`);
+      }
+    };
 
     evt.preventDefault();
 
@@ -38,6 +43,7 @@ export class PageController {
     }
 
     document.querySelector(`.films-list__container`).innerHTML = ``;
+    const currentActiveButton = document.querySelector(`.sort__button--active`);
 
     switch (evt.target.dataset.sortType) {
       case `date-up`:
