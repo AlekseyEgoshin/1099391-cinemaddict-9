@@ -183,7 +183,7 @@ const createFilm = () => {
     writers: createMocks(writers),
     actors: createMocks(actors),
     release: {
-      date: 1475924187819,
+      date: getRandomArbitrary(0, Date.now()),
       releaseCountry
     },
     genre: createMocks(genre),
