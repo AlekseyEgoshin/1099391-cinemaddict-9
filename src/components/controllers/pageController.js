@@ -1,75 +1,63 @@
-import {Content} from '../content';
-import {Position, render} from '../utils';
-import {FilmPopup} from '../film-popup';
-import {FilmCard} from '../film-card';
+import {SortingLine} from '../sorting-line';
+import {render, Position} from '../utils';
+import {FilmPopup} from "../film-popup";
+import {FilmCard} from "../film-card";
 
 const Film = {
   DEFAULT: `default`,
   EXTRA: `extra`,
 };
 
-export class ContentController {
-  constructor(container, defaultFilms, extraFilms) {
+export class PageController {
+  constructor(container, defaultFilms) {
     this._container = container;
-    this._content = new Content();
+    this._sort = new SortingLine();
     this._defaultFilms = defaultFilms;
-    this._extraFilms = extraFilms;
   }
 
   init() {
-    const changeStatisticsPoint = (filmCards) => {
-      const movies = document.querySelector(`.main-navigation__all-movies`);
-      const watchlist = document.querySelector(`.main-navigation__watchlist`);
-      const history = document.querySelector(`.main-navigation__history`);
-      const favorites = document.querySelector(`.main-navigation__favorites`);
+    render(this._container, this._sort.getElement(), Position.BEFOREEND);
+    this._sort.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
+  }
 
-      filmCards.forEach((filmCard) => {
-        // Обновляем значение фильтра all
-        movies.textContent = parseFloat(movies.textContent) + 1;
+  _onSortLinkClick(evt) {
+    const checkParametr = (Mocks) => {
+      const showMore = document.querySelector(`.films-list__show-more`);
+      if (showMore.classList.contains(`visually-hidden`)) {
+        Mocks.forEach((taskMock) => this._renderCard(taskMock, 0, Film.DEFAULT));
+      } else {
+        let i = 0;
+        Mocks.forEach((taskMock) => this._renderCard(taskMock, i++, Film.DEFAULT));
+      }
 
-        // Обновляем значение фильтра repeating
-        if (filmCard.isAdded) {
-          watchlist.textContent = parseFloat(watchlist.textContent) + 1;
-        }
-
-        // Обновляем значение фильтра history
-        if (filmCard.isWatched) {
-          favorites.textContent = parseFloat(history.textContent) + 1;
-        }
-
-        // Обновляем значение фильтра favorites
-        if (filmCard.isFavorite) {
-          favorites.textContent = parseFloat(favorites.textContent) + 1;
-        }
-      });
+      if (currentActiveButton.dataset.sortType !== evt.target.dataset.sortType) {
+        currentActiveButton.classList.remove(`sort__button--active`);
+        evt.target.classList.add(`sort__button--active`);
+      }
     };
 
-    const onMouseClick = () => {
-      const filmCards = document.querySelectorAll(`.film-card`);
-      const loadButton = document.querySelector(`.films-list__show-more`);
+    evt.preventDefault();
 
-      filmCards.forEach((singleCard) => {
-        if (singleCard.classList.contains(`visually-hidden`)) {
-          singleCard.classList.remove(`visually-hidden`);
-        }
-      });
+    if (evt.target.tagName !== `A`) {
+      return;
+    }
 
-      loadButton.classList.add(`visually-hidden`);
-    };
+    document.querySelector(`.films-list__container`).innerHTML = ``;
+    const currentActiveButton = document.querySelector(`.sort__button--active`);
 
-    changeStatisticsPoint(this._defaultFilms);
-    changeStatisticsPoint(this._extraFilms);
-
-    render(this._container, this._content.getElement(), Position.BEFOREEND);
-
-    let i = 0;
-    this._defaultFilms.forEach((filmMock) => this._renderCard(filmMock, i++, Film.DEFAULT));
-
-    const showMore = document.querySelector(`.films-list__show-more`);
-    showMore.addEventListener(`click`, onMouseClick);
-
-    i = 0;
-    this._extraFilms.forEach((filmMock) => this._renderCard(filmMock, i++, Film.EXTRA));
+    switch (evt.target.dataset.sortType) {
+      case `date-up`:
+        const sortedByDateUpFilms = this._defaultFilms.slice().sort((a, b) => a.movie.release.date - b.movie.release.date);
+        checkParametr(sortedByDateUpFilms);
+        break;
+      case `rating-up`:
+        const sortedByRatingUpFilms = this._defaultFilms.slice().sort((a, b) => b.movie.totalRating - a.movie.totalRating);
+        checkParametr(sortedByRatingUpFilms);
+        break;
+      default:
+        checkParametr(this._defaultFilms);
+        break;
+    }
   }
 
   _renderCard(filmMock, count, place) {
