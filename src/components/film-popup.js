@@ -3,25 +3,25 @@ import moment from 'moment';
 
 moment.updateLocale(`en`, {
   relativeTime: {
-    past:   "%s ago",
-    s  : 'now',
-    ss : 'now',
-    m:  "a minute ago",
-    mm: "a few minutes ago",
-    h:  "an hour ago",
-    hh: "a few hours ago",
-    d:  "a day ago",
-    dd: "%d days ago",
+    past: `%s ago`,
+    s: `now`,
+    ss: `now`,
+    m: `a minute ago`,
+    mm: `a few minutes ago`,
+    h: `an hour ago`,
+    hh: `a few hours ago`,
+    d: `a day ago`,
+    dd: `%d days ago`,
   }
 });
 
-moment.relativeTimeThreshold('ss', 0);
-moment.relativeTimeThreshold('s', 59);
-moment.relativeTimeThreshold('m', 3);
-moment.relativeTimeThreshold('mm', 59);
-moment.relativeTimeThreshold('h', 2);
-moment.relativeTimeThreshold('hh', 24);
-moment.relativeTimeThreshold('d', 355);
+moment.relativeTimeThreshold(`ss`, 0);
+moment.relativeTimeThreshold(`s`, 59);
+moment.relativeTimeThreshold(`m`, 3);
+moment.relativeTimeThreshold(`mm`, 59);
+moment.relativeTimeThreshold(`h`, 2);
+moment.relativeTimeThreshold(`hh`, 24);
+moment.relativeTimeThreshold(`d`, 355);
 
 export class FilmPopup extends AbstractComponent {
   constructor({movie, commentary, isAdded, isWatched, isFavorite}) {
