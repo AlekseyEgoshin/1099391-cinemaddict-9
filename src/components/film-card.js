@@ -26,14 +26,14 @@ export class FilmCard extends AbstractComponent {
         <p class="film-card__description">${this._movie.description.length > 139 ? `${this._movie.description.substring(0, 139)}...` : this._movie.description}</p>
         <a class="film-card__comments">${this._commentary} comments</a>
         <form class="film-card__controls">
-          <button 
-            class="film-card__controls-item button film-card__controls-item--add-to-watchlist${this._added ? ` film-card__controls-item--active` : ``}"
+          <button name="watchlist"
+            class="film-card__controls-item button film-card__controls-item--add-to-watchlist${this._added ? ` film-card__controls-item--active` : ``}" data-controls-item="add-to-watchlist"
           >Add to watchlist</button>
-          <button
-            class="film-card__controls-item button film-card__controls-item--mark-as-watched${this._watched ? ` film-card__controls-item--active` : ``}"
+          <button name="watched"
+            class="film-card__controls-item button film-card__controls-item--mark-as-watched${this._watched ? ` film-card__controls-item--active` : ``}" data-controls-item="mark-as-watched"
           >Mark as watched</button>
-          <button
-            class="film-card__controls-item button film-card__controls-item--favorite${this._favorite ? ` film-card__controls-item--active` : ``}"
+          <button name="favorite"
+            class="film-card__controls-item button film-card__controls-item--favorite${this._favorite ? ` film-card__controls-item--active` : ``}" data-controls-item="favorite"
           >Mark as favorite</button>
         </form>
       </article>

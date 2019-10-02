@@ -25,3 +25,8 @@ export const Position = {
   AFTERBEGIN: `afterbegin`,
   BEFOREEND: `beforeend`
 };
+
+export const Key = {
+  ESCAPE_IE: `Escape`,
+  ESCAPE: `Esc`,
+};

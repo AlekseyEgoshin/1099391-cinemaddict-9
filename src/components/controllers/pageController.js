@@ -1,33 +1,106 @@
 import {SortingLine} from '../sorting-line';
 import {render, Position} from '../utils';
-import {FilmPopup} from "../film-popup";
-import {FilmCard} from "../film-card";
-
-const Film = {
-  DEFAULT: `default`,
-  EXTRA: `extra`,
-};
+import {MovieController} from './movie';
+import {Content} from '../content';
 
 export class PageController {
-  constructor(container, defaultFilms) {
+  constructor(container, films) {
     this._container = container;
+    this._content = new Content();
     this._sort = new SortingLine();
-    this._defaultFilms = defaultFilms;
+    this._films = films;
+
+    this._subscriptions = [];
+    this._onChangeView = this._onChangeView.bind(this);
+    this._onDataChange = this._onDataChange.bind(this);
   }
 
   init() {
+    const changeStatisticsPoint = (filmCards) => {
+      const movies = document.querySelector(`.main-navigation__all-movies`);
+      const watchlist = document.querySelector(`.main-navigation__watchlist`);
+      const history = document.querySelector(`.main-navigation__history`);
+      const favorites = document.querySelector(`.main-navigation__favorites`);
+
+      filmCards.forEach((filmCard) => {
+        // Обновляем значение фильтра all
+        movies.textContent = parseFloat(movies.textContent) + 1;
+
+        // Обновляем значение фильтра repeating
+        if (filmCard.isAdded) {
+          watchlist.textContent = parseFloat(watchlist.textContent) + 1;
+        }
+
+        // Обновляем значение фильтра history
+        if (filmCard.isWatched) {
+          history.textContent = parseFloat(history.textContent) + 1;
+        }
+
+        // Обновляем значение фильтра favorites
+        if (filmCard.isFavorite) {
+          favorites.textContent = parseFloat(favorites.textContent) + 1;
+        }
+      });
+    };
+    const removeHiddenClass = () => {
+      const films = this._container.querySelectorAll(`.film-card`);
+      films.forEach((film) => {
+        if (film.classList.contains(`visually-hidden`)) {
+          film.classList.remove(`visually-hidden`);
+        }
+      });
+      showMore.classList.add(`visually-hidden`);
+    };
+
+    changeStatisticsPoint(this._films);
+
     render(this._container, this._sort.getElement(), Position.BEFOREEND);
+    render(this._container, this._content.getElement(), Position.BEFOREEND);
     this._sort.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
+
+    this._films.forEach((filmMock) => this._renderCard(filmMock));
+
+    const extraFilmList = [];
+    extraFilmList[0] = this._films.slice().sort((a, b) => b.movie.totalRating - a.movie.totalRating).slice(0, 2);
+    extraFilmList[1] = this._films.slice().sort((a, b) => b.commentary.length - a.commentary.length).slice(0, 2);
+
+    const extraFilms = document.querySelectorAll(`.films-list--extra`);
+    let i = 0;
+    extraFilms.forEach((container) => {
+      extraFilmList[i].forEach((film) => this._renderCard(film, undefined, container));
+      i++;
+    });
+
+    const showMore = document.querySelector(`.films-list__show-more`);
+    showMore.addEventListener(`click`, removeHiddenClass);
+  }
+
+  _onDataChange(newData, oldData) {
+    this._films[this._films.findIndex((it2) => it2 === oldData)] = newData;
+
+    this._films.forEach((filmMock) => this._renderCard(filmMock));
+  }
+
+  _onChangeView() {
+    this._subscriptions.forEach((subscription) => subscription());
   }
 
   _onSortLinkClick(evt) {
     const checkParametr = (Mocks) => {
       const showMore = document.querySelector(`.films-list__show-more`);
       if (showMore.classList.contains(`visually-hidden`)) {
-        Mocks.forEach((taskMock) => this._renderCard(taskMock, 0, Film.DEFAULT));
+        Mocks.forEach((taskMock) => this._renderCard(taskMock));
       } else {
         let i = 0;
-        Mocks.forEach((taskMock) => this._renderCard(taskMock, i++, Film.DEFAULT));
+        Mocks.forEach((taskMock) => {
+          if (i <= 5) {
+            this._renderCard(taskMock);
+          } else {
+            const addedClass = `visually-hidden`;
+            this._renderCard(taskMock, addedClass);
+          }
+          i++;
+        });
       }
 
       if (currentActiveButton.dataset.sortType !== evt.target.dataset.sortType) {
@@ -47,99 +120,21 @@ export class PageController {
 
     switch (evt.target.dataset.sortType) {
       case `date-up`:
-        const sortedByDateUpFilms = this._defaultFilms.slice().sort((a, b) => a.movie.release.date - b.movie.release.date);
+        const sortedByDateUpFilms = this._films.slice().sort((a, b) => a.movie.release.date - b.movie.release.date);
         checkParametr(sortedByDateUpFilms);
         break;
       case `rating-up`:
-        const sortedByRatingUpFilms = this._defaultFilms.slice().sort((a, b) => b.movie.totalRating - a.movie.totalRating);
+        const sortedByRatingUpFilms = this._films.slice().sort((a, b) => b.movie.totalRating - a.movie.totalRating);
         checkParametr(sortedByRatingUpFilms);
         break;
       default:
-        checkParametr(this._defaultFilms);
+        checkParametr(this._films);
         break;
     }
   }
 
-  _renderCard(filmMock, count, place) {
-    const onEscKeyDown = (evt) => {
-      if (evt.key === `Escape` || evt.key === `Esc`) {
-        filmListElement.replaceChild(film.getElement(), filmPopup.getElement());
-        document.removeEventListener(`keydown`, onEscKeyDown);
-      }
-    };
-
-    const onCloseClick = () => {
-      filmListElement.replaceChild(film.getElement(), filmPopup.getElement());
-      document.removeEventListener(`keydown`, onEscKeyDown);
-    };
-
-    const film = new FilmCard(filmMock);
-    const filmPopup = new FilmPopup(filmMock);
-
-    let filmListElement = ``;
-
-    if (place === Film.DEFAULT) {
-      const filmList = document.querySelector(`.films-list__container`);
-      filmListElement = filmList;
-
-      if (count >= 5) {
-        const lastAddedFilm = filmList.lastElementChild;
-        lastAddedFilm.classList.add(`visually-hidden`);
-      }
-    } else if (place === Film.EXTRA) {
-      const filmListExtra = document.querySelectorAll(`.films-list--extra`);
-      let filmsList;
-      if (count <= 1) {
-        filmsList = filmListExtra[0].querySelector(`.films-list__container`);
-      } else {
-        filmsList = filmListExtra[1].querySelector(`.films-list__container`);
-      }
-      filmListElement = filmsList;
-    }
-
-    // Event listener to change film to FilmPopup
-    // Первы обработчик - при клике на колличество комментариев
-    film.getElement().
-    querySelector(`.film-card__comments`)
-      .addEventListener(`click`, () => {
-        // filmListElement.replaceChild(filmPopup.getElement(), film.getElement());
-        document.addEventListener(`keydown`, onEscKeyDown);
-        const exit = document.querySelector(`.film-details__close-btn`);
-        exit.addEventListener(`click`, onCloseClick);
-      });
-    // Второй обработчик - при клике на постер
-    film.getElement().
-    querySelector(`.film-card__poster`)
-      .addEventListener(`click`, () => {
-        filmListElement.replaceChild(filmPopup.getElement(), film.getElement());
-        document.addEventListener(`keydown`, onEscKeyDown);
-        const exit = document.querySelector(`.film-details__close-btn`);
-        exit.addEventListener(`click`, onCloseClick);
-      });
-    // Второй обработчик - при клике на постер
-    film.getElement().
-    querySelector(`.film-card__title`)
-      .addEventListener(`click`, () => {
-        filmListElement.replaceChild(filmPopup.getElement(), film.getElement());
-        document.addEventListener(`keydown`, onEscKeyDown);
-        const exit = document.querySelector(`.film-details__close-btn`);
-        exit.addEventListener(`click`, onCloseClick);
-      });
-
-    filmPopup.getElement().querySelector(`textarea`)
-      .addEventListener(`focus`, () => {
-        document.removeEventListener(`keydown`, onEscKeyDown);
-        const exit = document.querySelector(`.film-details__close-btn`);
-        exit.removeEventListener(`click`, onCloseClick);
-      });
-
-    filmPopup.getElement().querySelector(`textarea`)
-      .addEventListener(`blur`, () => {
-        document.addEventListener(`keydown`, onEscKeyDown);
-        const exit = document.querySelector(`.film-details__close-btn`);
-        exit.addEventListener(`click`, onCloseClick);
-      });
-
-    render(filmListElement, film.getElement(), Position.BEFOREEND);
+  _renderCard(filmMock, addedClass = ``, place = document.querySelector(`.films-list__container`)) {
+    const movieController = new MovieController(place, filmMock, this._onChangeView, this._onDataChange, addedClass);
+    this._subscriptions.push(movieController.setDefaultView.bind(movieController));
   }
 }
