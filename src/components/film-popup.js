@@ -1,4 +1,27 @@
 import {AbstractComponent} from './abstract-component';
+import moment from 'moment';
+
+moment.updateLocale(`en`, {
+  relativeTime: {
+    past:   "%s ago",
+    s  : 'now',
+    ss : 'now',
+    m:  "a minute ago",
+    mm: "a few minutes ago",
+    h:  "an hour ago",
+    hh: "a few hours ago",
+    d:  "a day ago",
+    dd: "%d days ago",
+  }
+});
+
+moment.relativeTimeThreshold('ss', 0);
+moment.relativeTimeThreshold('s', 59);
+moment.relativeTimeThreshold('m', 3);
+moment.relativeTimeThreshold('mm', 59);
+moment.relativeTimeThreshold('h', 2);
+moment.relativeTimeThreshold('hh', 24);
+moment.relativeTimeThreshold('d', 355);
 
 export class FilmPopup extends AbstractComponent {
   constructor({movie, commentary, isAdded, isWatched, isFavorite}) {
@@ -159,7 +182,7 @@ export class FilmPopup extends AbstractComponent {
                       <p name="commentary" class="film-details__comment-text">${comment.commentary}</p>
                       <p class="film-details__comment-info">
                         <span name="author" class="film-details__comment-author">${comment.author}</span>
-                        <span name="date" class="film-details__comment-day">${comment.date}</span>
+                        <span name="date" class="film-details__comment-day">${moment(comment.date).fromNow(true)}</span>
                         <button class="film-details__comment-delete">Delete</button>
                       </p>
                     </div>
@@ -176,22 +199,22 @@ export class FilmPopup extends AbstractComponent {
                 </label>
       
                 <div class="film-details__emoji-list">
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="sleeping">
+                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-smile" value="smile">
                   <label class="film-details__emoji-label" for="emoji-smile">
                     <img src="./images/emoji/smile.png" width="30" height="30" alt="emoji" data-active-emoji="smile">
                   </label>
       
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="neutral-face">
+                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-sleeping" value="sleeping">
                   <label class="film-details__emoji-label" for="emoji-sleeping">
                     <img src="./images/emoji/sleeping.png" width="30" height="30" alt="emoji" data-active-emoji="sleeping">
                   </label>
       
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-gpuke" value="grinning">
+                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-gpuke" value="puke">
                   <label class="film-details__emoji-label" for="emoji-gpuke">
                     <img src="./images/emoji/puke.png" width="30" height="30" alt="emoji" data-active-emoji="puke">
                   </label>
       
-                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="grinning">
+                  <input class="film-details__emoji-item visually-hidden" name="comment-emoji" type="radio" id="emoji-angry" value="angry">
                   <label class="film-details__emoji-label" for="emoji-angry">
                     <img src="./images/emoji/angry.png" width="30" height="30" alt="emoji" data-active-emoji="angry">
                   </label>
@@ -221,7 +244,7 @@ export class FilmPopup extends AbstractComponent {
                 <p class="film-details__comment-info">
                   <span name="author" class="film-details__comment-author">${author[Math.floor(Math.random() * author.length)]}</span>
                   <!-- TODO: Добавить корректную реализацию со временем по ТЗ -->
-                  <span name="date" class="film-details__comment-day" data-current-date="${new Date().getTime()}">${new Date().getTime()}</span>
+                  <span name="date" class="film-details__comment-day" data-current-date="${new Date().getTime()}">${moment().fromNow(true)}</span>
                   <button class="film-details__comment-delete">Delete</button>
                 </p>
               </div>
