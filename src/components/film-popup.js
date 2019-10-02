@@ -209,26 +209,25 @@ export class FilmPopup extends AbstractComponent {
 
     this.getElement()
       .querySelector(`.film-details__comment-input`).addEventListener(`keydown`, (evt) => {
-      if (evt.key === `Enter` && evt.shiftKey || evt.key === `Enter` && evt.metaKey) {
-        evt.preventDefault();
-        const emoji = document.querySelector(`.film-details__emoji-item:checked`);
-
-        this.getElement().querySelector(`.film-details__comments-list`).insertAdjacentHTML(`beforeend`, `<li class="film-details__comment">
-            <span class="film-details__comment-emoji">
-              <img name="emotion" src="./images/emoji/${emoji.value}.png" data-choosen-emoji="${emoji.value}" width="55" height="55" alt="emoji">
-            </span>
-            <div>
-              <p name="commentary" class="film-details__comment-text">${evt.target.value}</p>
-              <p class="film-details__comment-info">
-                <span name="author" class="film-details__comment-author">${author[Math.floor(Math.random() * author.length)]}</span>
-                <!-- TODO: Добавить корректную реализацию со временем по ТЗ -->
-                <span name="date" class="film-details__comment-day" data-current-date="${new Date().getTime()}">${new Date().getTime()}</span>
-                <button class="film-details__comment-delete">Delete</button>
-              </p>
-            </div>
-          </li>`);
-        evt.target.value = ``;
-      }
-    });
+        if (evt.key === `Enter` && evt.shiftKey || evt.key === `Enter` && evt.metaKey) {
+          evt.preventDefault();
+          const emoji = document.querySelector(`.film-details__emoji-item:checked`);
+          this.getElement().querySelector(`.film-details__comments-list`).insertAdjacentHTML(`beforeend`, `<li class="film-details__comment">
+              <span class="film-details__comment-emoji">
+                <img name="emotion" src="./images/emoji/${emoji.value}.png" data-choosen-emoji="${emoji.value}" width="55" height="55" alt="emoji">
+              </span>
+              <div>
+                <p name="commentary" class="film-details__comment-text">${evt.target.value}</p>
+                <p class="film-details__comment-info">
+                  <span name="author" class="film-details__comment-author">${author[Math.floor(Math.random() * author.length)]}</span>
+                  <!-- TODO: Добавить корректную реализацию со временем по ТЗ -->
+                  <span name="date" class="film-details__comment-day" data-current-date="${new Date().getTime()}">${new Date().getTime()}</span>
+                  <button class="film-details__comment-delete">Delete</button>
+                </p>
+              </div>
+            </li>`);
+          evt.target.value = ``;
+        }
+      });
   }
 }

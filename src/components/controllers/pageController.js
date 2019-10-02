@@ -1,14 +1,7 @@
 import {SortingLine} from '../sorting-line';
 import {render, Position} from '../utils';
-import {FilmPopup} from '../film-popup';
-import {FilmCard} from '../film-card';
 import {MovieController} from './movie';
 import {Content} from '../content';
-
-const Film = {
-  DEFAULT: `default`,
-  EXTRA: `extra`,
-};
 
 export class PageController {
   constructor(container, films) {

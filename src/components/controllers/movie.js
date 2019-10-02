@@ -1,4 +1,3 @@
-import {SortingLine} from '../sorting-line';
 import {Position, render, Key, unrender} from '../utils';
 import {FilmCard} from '../film-card';
 import {FilmPopup} from '../film-popup';
@@ -20,7 +19,9 @@ export class MovieController {
     const onEscKeyDown = (evt) => {
       if (evt.key === Key.ESCAPE || evt.key === Key.ESCAPE_IE) {
         const body = document.querySelector(`.body`);
-        body.classList.contains(`hide-overflow`) ? body.classList.remove(`hide-overflow`) : ``;
+        if (body.classList.contains(`hide-overflow`)) {
+          body.classList.remove(`hide-overflow`);
+        }
         unrender(this._filmPopup.getElement());
         document.removeEventListener(`keydown`, onEscKeyDown);
       }
@@ -28,12 +29,12 @@ export class MovieController {
 
     const onCloseClick = () => {
       const body = document.querySelector(`.body`);
-      body.classList.contains(`hide-overflow`) ? body.classList.remove(`hide-overflow`) : ``;
+      if (body.classList.contains(`hide-overflow`)) {
+        body.classList.remove(`hide-overflow`);
+      }
       unrender(this._filmPopup.getElement());
       document.removeEventListener(`keydown`, onEscKeyDown);
     };
-
-    let filmListElement = ``;
 
     if (this._container === document.querySelector(`.films-list__container`)) {
       const filmList = document.querySelector(`.films-list`);
@@ -43,7 +44,7 @@ export class MovieController {
         this._filmView.getElement().classList.add(`visually-hidden`);
       }
     } else {
-      this._container = this._container.querySelector(`.films-list__container`)
+      this._container = this._container.querySelector(`.films-list__container`);
     }
 
     // Event listener to change film to FilmPopup
@@ -52,7 +53,9 @@ export class MovieController {
     querySelector(`.film-card__comments`)
       .addEventListener(`click`, () => {
         const body = document.querySelector(`.body`);
-        body.classList.contains(`hide-overflow`) ? `` : body.classList.add(`hide-overflow`);
+        if (body.classList.contains(`hide-overflow`)) {
+          body.classList.add(`hide-overflow`);
+        }
         render(body, this._filmPopup.getElement(), Position.BEFOREEND);
 
         document.addEventListener(`keydown`, onEscKeyDown);
@@ -64,7 +67,9 @@ export class MovieController {
     querySelector(`.film-card__poster`)
       .addEventListener(`click`, () => {
         const body = document.querySelector(`.body`);
-        body.classList.contains(`hide-overflow`) ? `` : body.classList.add(`hide-overflow`);
+        if (body.classList.contains(`hide-overflow`)) {
+          body.classList.add(`hide-overflow`);
+        }
         render(body, this._filmPopup.getElement(), Position.BEFOREEND);
 
         document.addEventListener(`keydown`, onEscKeyDown);
@@ -76,7 +81,9 @@ export class MovieController {
     querySelector(`.film-card__title`)
       .addEventListener(`click`, () => {
         const body = document.querySelector(`.body`);
-        body.classList.contains(`hide-overflow`) ? `` : body.classList.add(`hide-overflow`);
+        if (body.classList.contains(`hide-overflow`)) {
+          body.classList.add(`hide-overflow`);
+        }
         render(body, this._filmPopup.getElement(), Position.BEFOREEND);
 
         document.addEventListener(`keydown`, onEscKeyDown);
@@ -102,25 +109,22 @@ export class MovieController {
     this._filmPopup.getElement().querySelector(`textarea`)
       .addEventListener(`keydown`, (evt) => {
         const getFormData = () => {
-          const formData = new FormData(this._filmPopup.getElement().querySelector(`.film-details__inner`));
-
           const comment = document.querySelector(`.film-details__comment:last-child`);
           const entry = Object.assign({}, this._film);
-          entry.commentary.push({
+          const newComment = [{
             author: comment.querySelector(`.film-details__comment-author`).textContent,
             date: comment.querySelector(`.film-details__comment-day`).dataset.currentDate,
-            emotion: comment.querySelector(`.film-details__comment-text`).textContent,
-            commentary: comment.querySelector(`[name="emotion"]`).dataset.choosenEmoji,
-          });
+            commentary: comment.querySelector(`.film-details__comment-text`).textContent,
+            emotion: comment.querySelector(`[name="emotion"]`).dataset.choosenEmoji,
+          }];
+          Array.prototype.push.apply(entry.commentary, newComment);
 
           this._onDataChange(entry, this._film);
-        }
+        };
 
         if (evt.key === `Enter` && evt.shiftKey || evt.key === `Enter` && evt.metaKey) {
           evt.preventDefault();
           getFormData();
-
-          this._film;
         }
       });
 
@@ -140,9 +144,9 @@ export class MovieController {
 
       if (currentEmoji.classList.contains(`visually-hidden`)) {
         currentEmoji.classList.remove(`visually-hidden`);
-        currentEmoji.src = `./images/emoji/${activeEmoji}.png`
+        currentEmoji.src = `./images/emoji/${activeEmoji}.png`;
       } else {
-        currentEmoji.src = `./images/emoji/${activeEmoji}.png`
+        currentEmoji.src = `./images/emoji/${activeEmoji}.png`;
       }
     }
   }
@@ -160,6 +164,7 @@ export class MovieController {
               isWatched: this._filmPopup.getElement().querySelector(`#watched`).checked,
               isFavorite: this._filmPopup.getElement().querySelector(`#favorite`).checked,
             });
+            break;
 
           case `watched`:
             entry = Object.assign({}, this._film, {
@@ -167,6 +172,7 @@ export class MovieController {
               isWatched: evt.target.control.checked,
               isFavorite: this._filmPopup.getElement().querySelector(`#favorite`).checked,
             });
+            break;
 
           case `favorite`:
             entry = Object.assign({}, this._film, {
@@ -174,16 +180,21 @@ export class MovieController {
               isWatched: this._filmPopup.getElement().querySelector(`#watched`).checked,
               isFavorite: evt.target.control.checked,
             });
+            break;
         }
 
         const middleBlock = document.querySelector(`.form-details__middle-container`);
         if (entry.isWatched) {
-          middleBlock.classList.contains(`visually-hidden`) ? middleBlock.classList.remove(`visually-hidden`) : ``;
+          if (middleBlock.classList.contains(`visually-hidden`)) {
+            middleBlock.classList.remove(`visually-hidden`);
+          }
         } else {
-          middleBlock.classList.contains(`visually-hidden`) ? `` : middleBlock.classList.add(`visually-hidden`);
+          if (!middleBlock.classList.contains(`visually-hidden`)) {
+            middleBlock.classList.add(`visually-hidden`);
+          }
         }
         this._onDataChange(entry, this._film);
-      }
+      };
 
       document.querySelector(`.films-list__container`).innerHTML = ``;
       // evt.target.control.checked ? evt.target.control.checked = false : evt.target.control.checked = true;
@@ -203,7 +214,7 @@ export class MovieController {
   setDefaultView() {
     if (document.body.contains(this._filmPopup.getElement())) {
       unrender(this._filmPopup.getElement());
-      this._filmPopup.removeElement()
+      this._filmPopup.removeElement();
     }
   }
 }
