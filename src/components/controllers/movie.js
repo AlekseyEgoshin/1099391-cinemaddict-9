@@ -109,8 +109,10 @@ export class MovieController {
     this._filmPopup.getElement().querySelector(`textarea`)
       .addEventListener(`keydown`, (evt) => {
         const getFormData = () => {
+          const commentsCount = document.querySelector(`.film-details__comments-count`);
+          commentsCount.textContent = parseFloat(commentsCount.textContent) + 1;
           const comment = document.querySelector(`.film-details__comment:last-child`);
-          const entry = Object.assign({}, this._film);
+          const entry = JSON.parse(JSON.stringify(this._film));
           const newComment = [{
             author: comment.querySelector(`.film-details__comment-author`).textContent,
             date: comment.querySelector(`.film-details__comment-day`).dataset.currentDate,
@@ -124,6 +126,7 @@ export class MovieController {
 
         if (evt.key === `Enter` && evt.shiftKey || evt.key === `Enter` && evt.metaKey) {
           evt.preventDefault();
+          document.querySelector(`.films-list__container`).innerHTML = ``;
           getFormData();
         }
       });
@@ -197,7 +200,6 @@ export class MovieController {
       };
 
       document.querySelector(`.films-list__container`).innerHTML = ``;
-      // evt.target.control.checked ? evt.target.control.checked = false : evt.target.control.checked = true;
 
       if (evt.target.classList.contains(`film-card__controls-item--active`)) {
         evt.target.classList.remove(`film-card__controls-item--active`);

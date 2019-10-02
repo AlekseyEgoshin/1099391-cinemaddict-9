@@ -65,6 +65,16 @@ const createFilm = () => {
     `Made for Each Other`,
   ];
 
+  const date = [
+    `2019-05-11T16:12:32.554Z`,
+    `1962-05-11T10:10:30.554Z`,
+    `2019-10-06T16:12:32.554Z`,
+    `2005-02-25T20:11:52.554Z`,
+    `2012-12-27T16:16:32.554Z`,
+    `1988-06-28T22:02:32.554Z`,
+    `1967-03-13T23:09:32.554Z`,
+  ][Math.floor(Math.random() * 7)];
+
   const alt = [
     `The Dance of Life`,
     `Sagebrush Trail`,
@@ -183,7 +193,7 @@ const createFilm = () => {
     writers: createMocks(writers),
     actors: createMocks(actors),
     release: {
-      date: getRandomArbitrary(0, Date.now()),
+      date,
       releaseCountry
     },
     genre: createMocks(genre),
@@ -202,7 +212,14 @@ const createComments = () => {
   ];
 
   const author = [`Kristofer Nolan`, `Taika Vaititi`, `Joe Russo`, `George Lucas`, `Leopold`];
-  const date = [`3 years ago`, `1 years ago`, `Today`, `Yesterday`, `2 mounth ago`];
+  const date = [
+    `2019-10-02T12:36:30+05:00`,
+    `2019-10-02T12:34:12+05:00`,
+    `2019-10-02T12:30:12+05:00`,
+    `2019-10-02T12:25:12+05:00`,
+    `2019-10-02T11:34:12+05:00`,
+    `2019-10-02T07:34:12+05:00`,
+  ];
   const emotion = [`smile`, `sleeping`, `puke`, `angry`];
 
   const count = Math.floor(getRandomArbitrary(StringSize.MIN, StringSize.MAX));
