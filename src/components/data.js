@@ -14,15 +14,15 @@ export const getFilters = () => (
     },
     {
       title: `Watchlist`,
-      count: 1,
+      count: 0,
     },
     {
       title: `History`,
-      count: 2,
+      count: 0,
     },
     {
       title: `Favorites`,
-      count: 3,
+      count: 0,
     },
     {
       title: `Stats`,
