@@ -3,14 +3,13 @@ import {FilmCard} from '../film-card';
 import {FilmPopup} from '../film-popup';
 
 export class MovieController {
-  constructor(container, filmData, onChangeView, onDataChange, addedClass) {
+  constructor(container, filmData, onChangeView, onDataChange) {
     this._container = container;
     this._film = filmData;
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
     this._filmView = new FilmCard(this._film);
     this._filmPopup = new FilmPopup(this._film);
-    this._addedClass = addedClass;
 
     this.init();
   }
@@ -35,17 +34,6 @@ export class MovieController {
       unrender(this._filmPopup.getElement());
       document.removeEventListener(`keydown`, onEscKeyDown);
     };
-
-    if (this._container === document.querySelector(`.films-list__container`)) {
-      const filmList = document.querySelector(`.films-list`);
-      const filmsCount = filmList.querySelectorAll(`.film-card`);
-      const showMore = document.querySelector(`.films-list__show-more`);
-      if (filmsCount.length >= 5 && !showMore.classList.contains(`visually-hidden`)) {
-        this._filmView.getElement().classList.add(`visually-hidden`);
-      }
-    } else {
-      this._container = this._container.querySelector(`.films-list__container`);
-    }
 
     // Event listener to change film to FilmPopup
     // Первы обработчик - при клике на колличество комментариев
@@ -124,7 +112,7 @@ export class MovieController {
           this._onDataChange(entry, this._film);
         };
 
-        if (evt.key === `Enter` && evt.shiftKey || evt.key === `Enter` && evt.metaKey) {
+        if (evt.key === Key.ENTER && evt.shiftKey || evt.key === Key.ENTER && evt.metaKey) {
           evt.preventDefault();
           document.querySelector(`.films-list__container`).innerHTML = ``;
           getFormData();
@@ -136,6 +124,25 @@ export class MovieController {
 
     this._filmPopup.getElement().querySelector(`.film-details__emoji-list`)
       .addEventListener(`click`, this._onEmojiListClick.bind(this));
+
+    this._filmPopup.getElement().querySelector(`.film-details__comment-delete`)
+      .addEventListener(`click`, (evt) => {
+        // Вызываем внешний обработчик
+        // С помощью null сообщаем, что данные были удалены
+        evt.preventDefault();
+
+        if (evt.target.id && evt.target.tagName === `BUTTON`) {
+          const deleteButtonId = evt.target.id.split(`-`);
+          deleteButtonId.shift();
+
+          // const choosenElement = this._filmPopup.getElement().querySelector(`#comment-${deleteButtonId[0]}-${deleteButtonId[1]}`);
+
+          const entry = JSON.parse(JSON.stringify(this._film));
+          entry.commentary[evt.target.id] = null;
+
+          this._onDataChange(entry, this._film);
+        }
+      });
 
     render(this._container, this._filmView.getElement(), Position.BEFOREEND);
   }
