@@ -24,8 +24,9 @@ moment.relativeTimeThreshold(`hh`, 24);
 moment.relativeTimeThreshold(`d`, 355);
 
 export class FilmPopup extends AbstractComponent {
-  constructor({movie, commentary, isAdded, isWatched, isFavorite}) {
+  constructor({id, movie, commentary, isAdded, isWatched, isFavorite}) {
     super();
+    this._id = id;
     this._movie = movie;
     this._commentary = commentary;
     this._added = isAdded;
@@ -174,7 +175,7 @@ export class FilmPopup extends AbstractComponent {
       
               <ul class="film-details__comments-list">
                 ${(!this._commentary) ? `` : Array.from(this._commentary).map((comment) => `
-                  <li class="film-details__comment">
+                  <li class="film-details__comment" id="comment-${this._id}-${comment.id}">
                     <span class="film-details__comment-emoji">
                       <img name="emotion" src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji">
                     </span>
@@ -183,7 +184,7 @@ export class FilmPopup extends AbstractComponent {
                       <p class="film-details__comment-info">
                         <span name="author" class="film-details__comment-author">${comment.author}</span>
                         <span name="date" class="film-details__comment-day">${moment(comment.date).fromNow(true)}</span>
-                        <button class="film-details__comment-delete">Delete</button>
+                        <button id="delete-${this._id}-${comment.id}" class="film-details__comment-delete">Delete</button>
                       </p>
                     </div>
                   </li>`).join(``)}

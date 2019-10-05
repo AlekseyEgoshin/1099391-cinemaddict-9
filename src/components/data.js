@@ -1,4 +1,5 @@
 export const getFilmInfo = () => ({
+  id: getRandomArbitrary(0, 1000),
   movie: createFilm(),
   commentary: createComments(),
   isAdded: Boolean(Math.round(Math.random())),
@@ -33,7 +34,7 @@ export const getFilters = () => (
 
 const StringSize = {
   MAX: 10,
-  MIN: 0,
+  MIN: 1,
 };
 
 const getRandomArbitrary = (min, max) => {
@@ -226,6 +227,7 @@ const createComments = () => {
   const commentInfo = new Array(count);
   for (let i = 0; i < count; i++) {
     commentInfo[i] = {};
+    commentInfo[i].id = getRandomArbitrary(1, 1000);
     commentInfo[i].author = author[Math.floor(Math.random() * author.length)];
     commentInfo[i].date = date[Math.floor(Math.random() * date.length)];
     commentInfo[i].emotion = emotion[Math.floor(Math.random() * emotion.length)];
