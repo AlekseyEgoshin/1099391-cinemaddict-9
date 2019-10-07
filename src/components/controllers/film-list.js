@@ -7,8 +7,8 @@ export class FilmListController {
     this._subscriptions = [];
     this._films = [];
 
-    this._onChangeView = onDataChange;
-    this._onDataChange = onChangeView;
+    this._onChangeView = onChangeView;
+    this._onDataChange = onDataChange;
   }
 
   _renderCard(filmMock) {
