@@ -12,12 +12,13 @@ import {ExtraListMostCommented} from '../extra-list-most-commented';
 const FILMS_IN_ROW = 5;
 
 export default class PageController {
-  constructor(container, films, onDataChange) {
+  constructor(container, onDataChange) {
     this._container = container;
     this._filmList = new Content();
     this._sort = new SortingLine();
     this._showMoreButton = new ShowMoreButton();
     this._films = [];
+    this._currentFilms = [];
     this._defaultList = new FilmList();
     this._extraListTopRated = new ExtraListTopRated();
     this._extraListMostCommented = new ExtraListMostCommented();
@@ -29,9 +30,11 @@ export default class PageController {
     this._onDataChange = this._onDataChange.bind(this);
     this._onDataChangeMain = onDataChange;
 
-    this._FilmListController = new FilmListController(this._defaultList.getElement().querySelector(`.films-list__container`),
+    this._FilmListController = new FilmListController(
+        this._defaultList.getElement().querySelector(`.films-list__container`),
         this._onDataChange.bind(this),
-        this._onChangeView.bind(this));
+        this._onChangeView.bind(this)
+    );
 
     this.init();
   }
@@ -41,24 +44,19 @@ export default class PageController {
     render(this._filmList.getElement(), this._sort.getElement(), Position.AFTERBEGIN);
     render(this._filmList.getElement(), this._defaultList.getElement(), Position.BEFOREEND);
     this._sort.getElement().addEventListener(`click`, (evt) => this._onSortLinkClick(evt));
+
+    const siteMainNavigation = document.querySelector(`.main-navigation`);
+    siteMainNavigation.addEventListener(`click`, (evt) => this._onFilterClick(evt));
   }
 
-  _onDataChange(newData, oldData) {
-    const index = this._films.findIndex((film) => film === oldData);
+  _onDataChange(newData) {
+    this._films[newData.id].userDetails.watchlist = newData.userDetails.watchlist;
+    this._films[newData.id].userDetails.alreadyWatched = newData.userDetails.alreadyWatched;
+    this._films[newData.id].userDetails.favorite = newData.userDetails.favorite;
 
-    if (newData.some((film) => film.commentary.includes(null))) {
-      this._films = [...this._films.slice(0, index), ...this._films.slice(index + 1)];
-    } else if (newData.commentary.length > oldData.commentary.length) {
-      this._films[index].commentary = newData.commentary;
-    } else {
-      this._films.isWatched = newData.isWatched;
-      this._films.isAdded = newData.isAdded;
-      this._films.isFavorite = newData.isFavorite;
-    }
+    this._onDataChangeMain(this._films[newData.id]);
 
-    this.setFilms(this._films);
-
-    this._onDataChangeMain(this._films);
+    // this.setFilms(this._films);
   }
 
   _renderBoard() {
@@ -91,11 +89,11 @@ export default class PageController {
   }
 
   _onSortLinkClick(evt) {
-    const checkParametr = (Mocks) => {
+    const checkParametr = (Films) => {
       if (!this._showMoreButton) {
-        Mocks.forEach((task) => this._renderCard(task));
+        Films.forEach((task) => this._renderCard(task));
       } else {
-        Mocks.slice(0, this._showedFilms).forEach((task) => this._renderCard(task));
+        Films.slice(0, this._showedFilms).forEach((task) => this._renderCard(task));
       }
 
       if (currentActiveButton.dataset.sortType !== evt.target.dataset.sortType) {
@@ -125,19 +123,64 @@ export default class PageController {
     }
   }
 
-  _onLoadMoreButtonClick() {
-    this._films.slice(this._showedFilms, this._showedFilms + FILMS_IN_ROW).forEach((film) => this._renderCard(film));
+  _onFilterClick(evt) {
+    const checkParametr = (Films) => {
+      this._showedFilms = FILMS_IN_ROW;
+      this._currentFilms = Films;
 
-    this._showedFilms += FILMS_IN_ROW;
+      if (this._showedFilms < this._currentFilms.length) {
+        this._showMoreButton.getElement().classList.remove(`visually-hidden`);
+      } else {
+        this._showMoreButton.getElement().classList.add(`visually-hidden`);
+      }
+      this._currentFilms.slice(0, this._showedFilms).forEach((task) => this._renderCard(task));
+    };
 
-    if (this._showedFilms >= this._films.length) {
-      unrender(this._showMoreButton.getElement());
-      this._showMoreButton.removeElement();
+    evt.preventDefault();
+
+    if (evt.target.tagName === `A`) {
+      document.querySelector(`.films-list__container`).innerHTML = ``;
+      switch (evt.target.hash) {
+        case `#watchlist`:
+          const watchlist = this._films.slice().filter((film) => film.userDetails.watchlist);
+          checkParametr(watchlist);
+          break;
+        case `#history`:
+          const history = this._films.slice().filter((film) => film.userDetails.alreadyWatched);
+          checkParametr(history);
+          break;
+        case `#favorites`:
+          const favorites = this._films.slice().filter((film) => film.userDetails.favorite);
+          checkParametr(favorites);
+          break;
+        case `#all`:
+          checkParametr(this._films);
+          break;
+      }
     }
   }
 
-  _renderCard(filmMock, place = this._defaultList.getElement()) {
-    const movieController = new MovieController(place.querySelector(`.films-list__container`), filmMock, this._onChangeView, this._onDataChange);
+  _onLoadMoreButtonClick() {
+    if (!this._currentFilms) {
+      this._films.slice(this._showedFilms, this._showedFilms + FILMS_IN_ROW).forEach((film) => this._renderCard(film));
+      this._showedFilms += FILMS_IN_ROW;
+
+      if (this._showedFilms >= this._films.length) {
+        this._showMoreButton.getElement().classList.add(`visually-hidden`);
+      }
+    } else {
+      this._currentFilms.slice(this._showedFilms, this._showedFilms + FILMS_IN_ROW).forEach((film) => this._renderCard(film));
+      this._showedFilms += FILMS_IN_ROW;
+
+      if (this._showedFilms >= this._currentFilms.length) {
+        this._showMoreButton.getElement().classList.add(`visually-hidden`);
+      }
+    }
+
+  }
+
+  _renderCard(filmData, place = this._defaultList.getElement()) {
+    const movieController = new MovieController(place.querySelector(`.films-list__container`), filmData, this._onChangeView, this._onDataChange);
     this._subscriptions.push(movieController.setDefaultView.bind(movieController));
   }
 
@@ -146,6 +189,7 @@ export default class PageController {
   }
 
   show(films) {
+    this._filmList.getElement().querySelector(`.films-list__title`).classList.add(`visually-hidden`);
     if (films !== this._films) {
       this._setFilms(films);
     }

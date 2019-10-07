@@ -23,15 +23,25 @@ moment.relativeTimeThreshold(`h`, 2);
 moment.relativeTimeThreshold(`hh`, 24);
 moment.relativeTimeThreshold(`d`, 355);
 
+const FilmRating = {
+  ONE: 1,
+  TWO: 2,
+  THREE: 3,
+  FOUR: 4,
+  FIVE: 5,
+  SIX: 6,
+  SEVEN: 7,
+  EIGHT: 8,
+  NINE: 9,
+};
+
 export class FilmPopup extends AbstractComponent {
-  constructor({id, movie, commentary, isAdded, isWatched, isFavorite}) {
+  constructor({id, movie, userDetails}, commentary) {
     super();
     this._id = id;
     this._movie = movie;
     this._commentary = commentary;
-    this._added = isAdded;
-    this._watched = isWatched;
-    this._favorite = isFavorite;
+    this._userDetails = userDetails;
     this._element = null;
 
     this._subscribeOnEvents();
@@ -59,6 +69,7 @@ export class FilmPopup extends AbstractComponent {
       
                   <div class="film-details__rating">
                     <p name="totalRating" class="film-details__total-rating">${this._movie.totalRating}</p>
+                    <p class="film-details__user-rating ${this._userDetails.personalRating && this._userDetails.alreadyWatched ? `` : `visually-hidden`}">Your rate ${this._userDetails.personalRating}</p>
                   </div>
                 </div>
       
@@ -108,18 +119,18 @@ export class FilmPopup extends AbstractComponent {
             </div>
       
             <section class="film-details__controls">
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${this._added ? `checked` : ``}>
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="watchlist" name="watchlist" ${this._userDetails.watchlist ? `checked` : ``}>
               <label for="watchlist" class="film-details__control-label film-details__control-label--watchlist">Add to watchlist</label>
       
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="watched" name="watched" ${this._watched ? `checked` : ``}>
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="already_watched" name="watched" ${this._userDetails.alreadyWatched ? `checked` : ``}>
               <label for="watched" class="film-details__control-label film-details__control-label--watched">Already watched</label>
       
-              <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._favorite ? `checked` : ``}>
+              <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._userDetails.favorite ? `checked` : ``}>
               <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
             </section>
           </div>
           
-          <div class="form-details__middle-container ${this._watched ? `` : `visually-hidden`}">
+          <div class="form-details__middle-container ${this._userDetails.alreadyWatched ? `` : `visually-hidden`}">
             <section class="film-details__user-rating-wrap">
               <div class="film-details__user-rating-controls">
                 <button class="film-details__watched-reset" type="button">Undo</button>
@@ -136,31 +147,31 @@ export class FilmPopup extends AbstractComponent {
                   <p class="film-details__user-rating-feelings">How you feel it?</p>
       
                   <div class="film-details__user-rating-score">
-                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="1" id="rating-1">
+                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="1" id="rating-1" ${this._userDetails.personalRating === FilmRating.ONE ? `checked` : ``}>
                     <label class="film-details__user-rating-label" for="rating-1">1</label>
       
-                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="2" id="rating-2">
+                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="2" id="rating-2" ${this._userDetails.personalRating === FilmRating.TWO ? `checked` : ``}>
                     <label class="film-details__user-rating-label" for="rating-2">2</label>
       
-                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="3" id="rating-3">
+                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="3" id="rating-3" ${this._userDetails.personalRating === FilmRating.THREE ? `checked` : ``}>
                     <label class="film-details__user-rating-label" for="rating-3">3</label>
       
-                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="4" id="rating-4">
+                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="4" id="rating-4" ${this._userDetails.personalRating === FilmRating.FOUR ? `checked` : ``}>
                     <label class="film-details__user-rating-label" for="rating-4">4</label>
       
-                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="5" id="rating-5">
+                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="5" id="rating-5" ${this._userDetails.personalRating === FilmRating.FIVE ? `checked` : ``}>
                     <label class="film-details__user-rating-label" for="rating-5">5</label>
       
-                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="6" id="rating-6">
+                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="6" id="rating-6" ${this._userDetails.personalRating === FilmRating.SIX ? `checked` : ``}>
                     <label class="film-details__user-rating-label" for="rating-6">6</label>
       
-                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="7" id="rating-7">
+                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="7" id="rating-7" ${this._userDetails.personalRating === FilmRating.SEVEN ? `checked` : ``}>
                     <label class="film-details__user-rating-label" for="rating-7">7</label>
       
-                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="8" id="rating-8">
+                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="8" id="rating-8" ${this._userDetails.personalRating === FilmRating.EIGHT ? `checked` : ``}>
                     <label class="film-details__user-rating-label" for="rating-8">8</label>
       
-                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="9" id="rating-9" checked>
+                    <input type="radio" name="score" class="film-details__user-rating-input visually-hidden" value="9" id="rating-9" ${this._userDetails.personalRating === FilmRating.NINE ? `checked` : ``}>
                     <label class="film-details__user-rating-label" for="rating-9">9</label>
       
                   </div>
@@ -180,7 +191,7 @@ export class FilmPopup extends AbstractComponent {
                       <img name="emotion" src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji">
                     </span>
                     <div>
-                      <p name="commentary" class="film-details__comment-text">${comment.commentary}</p>
+                      <p name="commentary" class="film-details__comment-text">${comment.comment}</p>
                       <p class="film-details__comment-info">
                         <span name="author" class="film-details__comment-author">${comment.author}</span>
                         <span name="date" class="film-details__comment-day">${moment(comment.date).fromNow(true)}</span>
