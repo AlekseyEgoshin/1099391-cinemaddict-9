@@ -3,6 +3,9 @@ import {FilmPopupBottomBlock} from '../film-popup-bottom';
 import {FilmPopupMiddleBlock} from '../film-popup-middle';
 import {ActionType, Key, Position, render, unrender} from '../utils';
 import {FilmPopupContainer} from '../film-popup-container';
+import LocalCommentary from '../local-commentary';
+import LocalFilm from '../local-film';
+import moment from 'moment';
 
 export class FilmPopupController {
   constructor(container, film, comments, onDataChange) {
@@ -12,11 +15,14 @@ export class FilmPopupController {
     this._onDataChange = onDataChange;
 
     this._popupContainer = new FilmPopupContainer();
-    this._topElement = new FilmPopupTopBlock(this._film);
-    this._middleElement = new FilmPopupMiddleBlock(this._film);
-    this._bottomElement = new FilmPopupBottomBlock(this._film, this._comments);
+    this._topElement = null;
+    this._middleElement = null;
+    this._bottomElement = null;
+    // this._topElement = new FilmPopupTopBlock(this._film);
+    // this._middleElement = new FilmPopupMiddleBlock(this._film);
+    // this._bottomElement = new FilmPopupBottomBlock(this._film, this._comments);
 
-    this._init();
+    // this._init();
   }
 
   _init() {
@@ -34,9 +40,9 @@ export class FilmPopupController {
         this._container.classList.remove(`hide-overflow`);
       }
       this._filmPopupController.unrenderPopup();
-      document.removeEventListener(`keydown`, onEscKeyDown);
+      document.removeEventListener(`keydown`, this._onEscKeyDown);
     }
-  };
+  }
 
   _onCloseClick() {
     const body = document.querySelector(`.body`);
@@ -44,8 +50,8 @@ export class FilmPopupController {
       body.classList.remove(`hide-overflow`);
     }
     this._filmPopupController.unrenderPopup();
-    document.removeEventListener(`keydown`, onEscKeyDown);
-  };
+    document.removeEventListener(`keydown`, this._onEscKeyDown);
+  }
 
   _addListeners() {
     document.addEventListener(`keydown`, this._onEscKeyDown);
@@ -66,22 +72,13 @@ export class FilmPopupController {
     this._bottomElement.getElement().querySelector(`textarea`).addEventListener(`keydown`, (evt) => {
       const getFormData = () => {
         const formData = new FormData(document.querySelector(`.film-details__inner`));
-        console.log(document.querySelector(`.film-details__emoji-label`))
-        console.log(formData)
 
-        // const commentsCount = document.querySelector(`.film-details__comments-count`);
-        // commentsCount.textContent = parseFloat(commentsCount.textContent) + 1;
-        // const lastComment = document.querySelector(`.film-details__comment:last-child`);
-        // const entry = JSON.parse(JSON.stringify(this._film));
-        // const newComment = [{
-        //   author: lastComment.querySelector(`.film-details__comment-author`).textContent,
-        //   date: lastComment.querySelector(`.film-details__comment-day`).dataset.currentDate,
-        //   commentary: lastComment.querySelector(`.film-details__comment-text`).textContent,
-        //   emotion: lastComment.querySelector(`[name="emotion"]`).dataset.choosenEmoji,
-        // }];
-        // Array.prototype.push.apply(entry.commentary, newComment);
-        //
-        // this._onDataChange(entry, this._film);
+        const newComment = new LocalCommentary({
+          date: moment(Date.now()).toISOString(),
+          commentary: formData.get(`comment`),
+          emotion: formData.get(`comment-emoji`),
+        });
+        this._onDataChange(newComment, ActionType.createComment, this._film.id);
       };
 
       if (evt.key === Key.ENTER && evt.shiftKey || evt.key === Key.ENTER && evt.metaKey) {
@@ -122,8 +119,10 @@ export class FilmPopupController {
       if (currentEmoji.classList.contains(`visually-hidden`)) {
         currentEmoji.classList.remove(`visually-hidden`);
         currentEmoji.src = `./images/emoji/${activeEmoji}.png`;
+        currentEmoji.alt = `${activeEmoji}`;
       } else {
         currentEmoji.src = `./images/emoji/${activeEmoji}.png`;
+        currentEmoji.alt = `${activeEmoji}`;
       }
     }
   }
@@ -159,18 +158,18 @@ export class FilmPopupController {
           }
         }
 
-        this._onDataChange(entry, this._film);
+        entry = new LocalFilm(entry);
+
+        this._onDataChange(entry, ActionType.changeStatistic, this._film.id);
       };
 
       document.querySelector(`.films-list__container`).innerHTML = ``;
 
       if (evt.target.classList.contains(`film-card__controls-item--active`)) {
         evt.target.classList.remove(`film-card__controls-item--active`);
-
         changeData();
       } else {
         evt.target.classList.add(`film-card__controls-item--active`);
-
         changeData();
       }
     }
@@ -181,14 +180,24 @@ export class FilmPopupController {
     this._popupContainer.removeElement();
   }
 
-  updateRating() {
+  unrenderComments() {
+    this._bottomElement.removeElement();
+  }
 
+  setComments(comment) {
+    this._comments = comment;
+    this._topElement = new FilmPopupTopBlock(this._film);
+    this._middleElement = new FilmPopupMiddleBlock(this._film);
+    this._bottomElement = new FilmPopupBottomBlock(this._comments);
+
+    this._init();
   }
 
   updateComment(newComments) {
     this._comments = newComments;
-    unrender(this._bottomElement.getElement());
+    //  this.unrenderComments();
     this._bottomElement.removeElement();
+
     this._bottomElement = new FilmPopupBottomBlock(this._comments);
 
     render(this._popupContainer.getElement().querySelector(`.film-details__inner`), this._bottomElement.getElement(), Position.BEFOREEND);

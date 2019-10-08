@@ -1,4 +1,4 @@
-import {AbstractComponent} from "./abstract-component";
+import {AbstractComponent} from './abstract-component';
 import moment from 'moment';
 
 moment.updateLocale(`en`, {
@@ -24,9 +24,8 @@ moment.relativeTimeThreshold(`hh`, 24);
 moment.relativeTimeThreshold(`d`, 355);
 
 export class FilmPopupBottomBlock extends AbstractComponent {
-  constructor({id}, comment) {
+  constructor(comment) {
     super();
-    this._id = id;
     this._commentary = comment;
   }
 
@@ -37,7 +36,7 @@ export class FilmPopupBottomBlock extends AbstractComponent {
       
             <ul class="film-details__comments-list">
               ${(!this._commentary) ? `` : Array.from(this._commentary).map((comment) => `
-                <li class="film-details__comment" data-comment-info="${this._id}-${comment.id}" data-film-id="${this._id}" data-comment-id="${comment.id}">
+                <li class="film-details__comment" data-comment-info="${comment.id}">
                   <span class="film-details__comment-emoji">
                     <img name="emotion" src="./images/emoji/${comment.emotion}.png" width="55" height="55" alt="emoji">
                   </span>
@@ -85,6 +84,6 @@ export class FilmPopupBottomBlock extends AbstractComponent {
             </div>
           </section>
         </div>
-      `
+      `;
   }
 }

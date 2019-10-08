@@ -58,6 +58,6 @@ export class FilmPopupMiddleBlock extends AbstractComponent {
           </div>
         </section>
       </div>
-    `
+    `;
   }
 }

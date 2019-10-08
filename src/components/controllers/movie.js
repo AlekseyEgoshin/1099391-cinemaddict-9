@@ -1,39 +1,35 @@
-import {Position, render, Key, unrender} from '../utils';
+import {Position, render} from '../utils';
 import {FilmCard} from '../film-card';
-import {API} from "../api";
-import {FilmPopupController} from "./film-popup";
-
-const AUTHORIZATION = `Basic ${Math.random().toString(36).slice(2)}`;
-const END_POINT = `https://htmlacademy-es-9.appspot.com/cinemaddict/`;
-
-const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
+import {FilmPopupController} from './film-popup';
 
 export class MovieController {
-  constructor(container, filmData, onChangeView, onDataChange) {
+  constructor(container, filmData, onChangeView, onDataChange, api) {
     this._container = container;
     this._siteBody = document.querySelector(`.body`);
     this._film = filmData;
+    this._api = api;
     this._filmComments = [];
     this._onDataChange = onDataChange;
     this._onChangeView = onChangeView;
     this._filmView = new FilmCard(this._film);
     this._filmPopupController = {};
 
-    this.init();
+    this._init();
   }
 
-  init() {
+  _init() {
     const onFilmCardClick = () => {
       if (this._siteBody.classList.contains(`hide-overflow`)) {
         this._siteBody.classList.add(`hide-overflow`);
       }
 
-      api.getComments(this._film.id).then((comment) => {
+      this._api.getComments(this._film.id).then((comment) => {
         this._filmComments = comment;
-
         this._filmPopupController = new FilmPopupController(this._siteBody, this._film, this._filmComments, this._onDataChange);
+        this._filmPopupController.setComments(this._filmComments);
       });
     };
+    this._filmPopupController = new FilmPopupController(this._siteBody, this._film, null, this._onDataChange);
 
     // Event listener to change film to FilmPopup
     // Первый обработчик - при клике на колличество комментариев
@@ -51,6 +47,6 @@ export class MovieController {
   }
 
   updateComments(commentData) {
-    this._filmPopupController.updateComments(commentData);
+    this._filmPopupController.updateComment(commentData);
   }
 }

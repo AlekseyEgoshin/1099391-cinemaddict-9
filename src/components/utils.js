@@ -5,11 +5,15 @@ export const createElement = (template) => {
 };
 
 export const changeStatisticsPoint = (filmCards) => {
-  filmCards.forEach((filmCard) => {
-    const watchlist = document.querySelector(`.main-navigation__watchlist`);
-    const history = document.querySelector(`.main-navigation__history`);
-    const favorites = document.querySelector(`.main-navigation__favorites`);
+  const watchlist = document.querySelector(`.main-navigation__watchlist`);
+  const history = document.querySelector(`.main-navigation__history`);
+  const favorites = document.querySelector(`.main-navigation__favorites`);
 
+  watchlist.textContent = 0;
+  history.textContent = 0;
+  favorites.textContent = 0;
+
+  filmCards.forEach((filmCard) => {
     // Обновляем значение фильтра repeating
     if (filmCard.userDetails.watchlist) {
       watchlist.textContent = parseFloat(watchlist.textContent) + 1;
@@ -59,7 +63,7 @@ export const ActionType = {
   createComment: `create`,
   deleteComment: `delete`,
   changeStatistic: `changeFilm`,
-}
+};
 
 export const FilmRating = {
   ONE: 1,
@@ -71,6 +75,15 @@ export const FilmRating = {
   SEVEN: 7,
   EIGHT: 8,
   NINE: 9,
+};
+
+export const shake = (element) => {
+  const ANIMATION_TIMEOUT = 600;
+  element.style.animation = `shake ${ANIMATION_TIMEOUT / 1000}s`;
+
+  setTimeout(() => {
+    element.style.animation = ``;
+  }, ANIMATION_TIMEOUT);
 };
 
 export const getUserRank = (filmsData) => {

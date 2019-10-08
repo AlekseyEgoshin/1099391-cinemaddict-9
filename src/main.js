@@ -1,15 +1,14 @@
 import {getFilters} from './components/data';
 import {SearchLine} from './components/search-line';
-import {UserRank} from './components/user-rank';
 // import SiteMenu from './components/site-menu'
 
 import {render, Position, AUTHORIZATION, END_POINT, changeStatisticsPoint} from './components/utils';
 import {Menu} from './components/menu';
 import PageController from './components/controllers/page';
 import {SearchController} from './components/controllers/search';
-import {StatisticController} from "./components/controllers/statistics";
+import {StatisticController} from './components/controllers/statistics';
 import {API} from './components/api';
-import UserRankController from "./components/controllers/user-rank";
+import UserRankController from './components/controllers/user-rank';
 
 const api = new API({endPoint: END_POINT, authorization: AUTHORIZATION});
 
@@ -42,7 +41,7 @@ api.getFilms().then(function (filmData) {
       pageController.show(filmData);
     };
 
-    const searchController = new SearchController(siteMainElement, searchLine, onResetButtonClick, onDataChange);
+    const searchController = new SearchController(siteMainElement, searchLine, onResetButtonClick);
 
     searchLine.getElement().addEventListener(`click`, (ev) => {
       if (ev.target.tagName === `INPUT`) {

@@ -44,13 +44,6 @@ export class StatisticController {
 
     const mostPopularGenre = this._statistic.getElement().querySelector(`.statistic__most-popular`);
     const totalDuration = this._statistic.getElement().querySelector(`.statistic__watching-time`);
-    const calculateTime = {
-      hours: Math.floor(this._watchingTime / 60),
-      minutes: (this._watchingTime.runtime - Math.floor(this._watchingTime.runtime / 60) * 60 <= 0) ? 0 : (this._watchingTime - Math.floor(this._watchingTime / 60) * 60)
-    };
-
-    const statisticTimeTemplate = `${calculateTime.hours} <span class="statistic__item-description">h</span> ${calculateTime.minutes} <span class="statistic__item-description">m</span>`;
-    totalDuration.innerHTML = statisticTimeTemplate;
 
     let statisticGenre = {};
     this._films.forEach(({movie: {genre}, movie: {runtime}, userDetails: {alreadyWatched}}) => {
@@ -68,6 +61,13 @@ export class StatisticController {
         this._watchingTime += runtime;
       }
     });
+    const calculateTime = {
+      hours: Math.floor(this._watchingTime / 60),
+      minutes: (this._watchingTime.runtime - Math.floor(this._watchingTime.runtime / 60) * 60 <= 0) ? 0 : (this._watchingTime - Math.floor(this._watchingTime / 60) * 60)
+    };
+
+    const statisticTimeTemplate = `${calculateTime.hours} <span class="statistic__item-description">h</span> ${calculateTime.minutes} <span class="statistic__item-description">m</span>`;
+    totalDuration.innerHTML = statisticTimeTemplate;
 
     const sortedGenres = genreSorting(statisticGenre);
 

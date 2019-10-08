@@ -42,13 +42,13 @@ export const API = class {
     return this._load({url: `comments/${filmId}`}).then(toJSON).then(ModelFilm.parseComments);
   }
 
-  createComment(filmId, newComment, comment) {
+  createComment({id, data}) {
     return this._load({
-      url: `comments/${filmId}`,
+      url: `comments/${id}`,
       method: Method.POST,
-      body: JSON.stringify(comment),
+      body: JSON.stringify(data),
       headers: new Headers({'Content-Type': `application/json`})
-    }).then(toJSON).then(ModelFilm.parseFilm);
+    }).then(toJSON);
   }
 
   deleteComment(commentId) {

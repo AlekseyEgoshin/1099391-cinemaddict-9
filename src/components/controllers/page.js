@@ -1,5 +1,5 @@
 import {SortingLine} from '../sorting-line';
-import {render, unrender, Position, changeStatisticsPoint} from '../utils';
+import {render, unrender, Position, changeStatisticsPoint, shake} from '../utils';
 import {MovieController} from './movie';
 import {Content} from '../content';
 import {ShowMoreButton} from '../show-more-button';
@@ -22,6 +22,7 @@ export default class PageController {
     this._defaultList = new FilmList();
     this._extraListTopRated = new ExtraListTopRated();
     this._extraListMostCommented = new ExtraListMostCommented();
+    this._movieController = null;
     this._api = api;
 
     this._showedFilms = FILMS_IN_ROW;
@@ -32,9 +33,10 @@ export default class PageController {
     this._onDataChangeMain = onDataChange;
 
     this._FilmListController = new FilmListController(
-      this._defaultList.getElement().querySelector(`.films-list__container`),
-      this._onDataChange.bind(this),
-      this._onChangeView.bind(this)
+        this._defaultList.getElement().querySelector(`.films-list__container`),
+        this._onDataChange.bind(this),
+        this._onChangeView.bind(this),
+        this._api
     );
 
     this.init();
@@ -54,37 +56,42 @@ export default class PageController {
     switch (actionType) {
       case `changeFilm`:
         this._api.updateFilm({
-          id: update.id,
+          id: filmId,
           data: update.toRAW()
         })
           .then(() => this._api.getFilms()).then((films) => {
-            const filtersCount = siteMenu.getElement().querySelectorAll(`.main-navigation__item-count`);
-            filtersCount.forEach((filter) => (filter.textContent = 0));
             changeStatisticsPoint(films);
-            pageController.show(films);
+            this.show(films);
           });
         break;
       case `delete`:
         this._api.deleteComment(update)
           .then(() => this._api.getComments(filmId)
             .then((comments) => {
-              pageController.updateComments(comments);
+              this.updateComments(comments);
             }))
           .then(() => this._api.getFilms()
             .then((films) => {
-              const filtersCount = siteMenu.getElement().querySelectorAll(`.main-navigation__item-count`);
-              filtersCount.forEach((filter) => (filter.textContent = 0));
               changeStatisticsPoint(films);
-              pageController.show(films);
-            }));
+              this.show(films);
+            }))
+          .catch(() => shake(document.querySelector(`[data-comment-id="${update}"`)));
         break;
       case `create`:
+        this._api.createComment({
+          id: filmId,
+          data: update.toRAW()
+        })
+          .then(() => this._api.getComments(filmId)
+            .then((commentsData) => this.updateComments(commentsData)
+            ))
+          .then(() => this._api.getFilms()
+            .then((films) => {
+              this._setFilms(films);
+            }));
+        break;
     }
   }
-
-
-    // this.setFilms(this._films);
-
 
   _renderBoard() {
     render(this._filmList.getElement(), this._defaultList.getElement(), Position.BEFOREEND);
@@ -207,8 +214,7 @@ export default class PageController {
   }
 
   _renderCard(filmData, place = this._defaultList.getElement()) {
-    const movieController = new MovieController(place.querySelector(`.films-list__container`), filmData, this._onChangeView, this._onDataChange);
-    this._subscriptions.push(movieController.setDefaultView.bind(movieController));
+    this._movieController = new MovieController(place.querySelector(`.films-list__container`), filmData, this._onChangeView, this._onDataChange, this._api);
   }
 
   hide() {
@@ -231,6 +237,6 @@ export default class PageController {
   }
 
   updateComments(commentData) {
-    MovieController.updateComments(commentData);
+    this._movieController.updateComments(commentData);
   }
 }

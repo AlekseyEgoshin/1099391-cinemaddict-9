@@ -1,8 +1,8 @@
-import {AbstractComponent} from "./abstract-component";
+import {AbstractComponent} from './abstract-component';
 
 export class FilmPopupTopBlock extends AbstractComponent {
   constructor({movie, userDetails}) {
-    super()
+    super();
     this._movie = movie;
     this._userDetails = userDetails;
   }
@@ -86,6 +86,7 @@ export class FilmPopupTopBlock extends AbstractComponent {
           <input type="checkbox" class="film-details__control-input visually-hidden" id="favorite" name="favorite" ${this._userDetails.favorite ? `checked` : ``}>
           <label for="favorite" class="film-details__control-label film-details__control-label--favorite">Add to favorites</label>
         </section>
-      </div>`
+      </div>
+    `;
   }
 }
