@@ -1,5 +1,5 @@
 import {SortingLine} from '../sorting-line';
-import {render, unrender, Position} from '../utils';
+import {render, unrender, Position, changeStatisticsPoint} from '../utils';
 import {MovieController} from './movie';
 import {Content} from '../content';
 import {ShowMoreButton} from '../show-more-button';
@@ -12,7 +12,7 @@ import {ExtraListMostCommented} from '../extra-list-most-commented';
 const FILMS_IN_ROW = 5;
 
 export default class PageController {
-  constructor(container, onDataChange) {
+  constructor(container, onDataChange, api) {
     this._container = container;
     this._filmList = new Content();
     this._sort = new SortingLine();
@@ -22,6 +22,7 @@ export default class PageController {
     this._defaultList = new FilmList();
     this._extraListTopRated = new ExtraListTopRated();
     this._extraListMostCommented = new ExtraListMostCommented();
+    this._api = api;
 
     this._showedFilms = FILMS_IN_ROW;
     this._subscriptions = [];
@@ -31,9 +32,9 @@ export default class PageController {
     this._onDataChangeMain = onDataChange;
 
     this._FilmListController = new FilmListController(
-        this._defaultList.getElement().querySelector(`.films-list__container`),
-        this._onDataChange.bind(this),
-        this._onChangeView.bind(this)
+      this._defaultList.getElement().querySelector(`.films-list__container`),
+      this._onDataChange.bind(this),
+      this._onChangeView.bind(this)
     );
 
     this.init();
@@ -49,15 +50,41 @@ export default class PageController {
     siteMainNavigation.addEventListener(`click`, (evt) => this._onFilterClick(evt));
   }
 
-  _onDataChange(newData) {
-    this._films[newData.id].userDetails.watchlist = newData.userDetails.watchlist;
-    this._films[newData.id].userDetails.alreadyWatched = newData.userDetails.alreadyWatched;
-    this._films[newData.id].userDetails.favorite = newData.userDetails.favorite;
+  _onDataChange(update, actionType, filmId = null) {
+    switch (actionType) {
+      case `changeFilm`:
+        this._api.updateFilm({
+          id: update.id,
+          data: update.toRAW()
+        })
+          .then(() => this._api.getFilms()).then((films) => {
+            const filtersCount = siteMenu.getElement().querySelectorAll(`.main-navigation__item-count`);
+            filtersCount.forEach((filter) => (filter.textContent = 0));
+            changeStatisticsPoint(films);
+            pageController.show(films);
+          });
+        break;
+      case `delete`:
+        this._api.deleteComment(update)
+          .then(() => this._api.getComments(filmId)
+            .then((comments) => {
+              pageController.updateComments(comments);
+            }))
+          .then(() => this._api.getFilms()
+            .then((films) => {
+              const filtersCount = siteMenu.getElement().querySelectorAll(`.main-navigation__item-count`);
+              filtersCount.forEach((filter) => (filter.textContent = 0));
+              changeStatisticsPoint(films);
+              pageController.show(films);
+            }));
+        break;
+      case `create`:
+    }
+  }
 
-    this._onDataChangeMain(this._films[newData.id]);
 
     // this.setFilms(this._films);
-  }
+
 
   _renderBoard() {
     render(this._filmList.getElement(), this._defaultList.getElement(), Position.BEFOREEND);
@@ -201,5 +228,9 @@ export default class PageController {
     this._showedFilms = FILMS_IN_ROW;
 
     this._renderBoard();
+  }
+
+  updateComments(commentData) {
+    MovieController.updateComments(commentData);
   }
 }

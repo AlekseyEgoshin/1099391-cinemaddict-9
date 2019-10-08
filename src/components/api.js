@@ -51,13 +51,11 @@ export const API = class {
     }).then(toJSON).then(ModelFilm.parseFilm);
   }
 
-  deleteComment(filmId, commentId) {
+  deleteComment(commentId) {
     return this._load({
       url: `comments/${commentId}`,
       method: Method.DELETE,
-      body: JSON.stringify(commentId),
-      headers: new Headers({'Content-Type': `application/json`})
-    }).then(toJSON);
+    });
   }
 
   _load({url, method = Method.GET, body = null, headers = new Headers()}) {
